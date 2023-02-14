@@ -1,0 +1,7 @@
+# 2023-02-14
+
+- Hough Transform (Util para geometrias basicas, como un rejilla)
+- Template Matching
+  - Suma de diferencias absolutas vs Producto
+- Algunas metodologias de correlacion cruzada tienen analogo en redes convolucionales
+  - Por ejemplo muestreo aleatorio??
