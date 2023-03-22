@@ -9,12 +9,7 @@ from skimage.measure import label
 from skimage.transform import resize
 import os
 import numpy as np
-
-from PIL import Image
-
-path = 'dataset/ACU185.jpg'
-image= io.imread(path)
-image = color.rgb2gray(image)
+import glob
 
 
 def imadjust(x,a,b,c,d,gamma=1):
@@ -45,84 +40,94 @@ def stretchlim(img,method='adaptive'):
         img2 =exposure.equalize_adapthist(img, clip_limit=0.03)
     return img2
 
-image=stretchlim(image)
-
-image=1-image
-l=threshold_otsu(image)
 def binarize(x,l):
     return (x > l)*1
-image = binarize(image,l)
-
-image = clear_border(image)
-
-image = area_opening(image)[30:130,:]
-
-plt.imshow(image)
-plt.show()
-
-#labeling
-labeled_image = label(image,connectivity=2)
-labels,counts = np.unique(labeled_image,return_counts=True)
-
-# keep first 7 (background+6 letters)
-
-labels = labels[:7]
-counts = counts[:7]
-
-# for each label crop
-la = 1
-idxs=np.where(labeled_image==la)
-#identify border x,y
-minx,maxx = min(idxs[0]),max(idxs[0])
-miny,maxy = min(idxs[1]),max(idxs[1])
-
-# Assume label 0 is background
-standard_size =(100, 50)
-letter = resize(labeled_image[minx:maxx,miny:maxy]>0,standard_size ,anti_aliasing=False)
-plt.imshow(letter)
-plt.show()
 
 
-image=letter
-"""
-# Calculating the SVD
-u, s, v = np.linalg.svd(labeled_image[minx:maxx,miny:maxy], full_matrices=False)
-  
-# inspect shapes of the matrices
-print(f'u.shape:{u.shape},s.shape:{s.shape},v.shape:{v.shape}')
+def get_letters(img_path):
+
+    filename=os.path.basename(img_path).replace('.jpg','')
+    assert len(filename)==6
+    chars = filename
+
+    image= io.imread(img_path)
+    image = color.rgb2gray(image)
 
 
-comps = [u.shape[0], u.shape[0]//2, u.shape[0]//4,u.shape[0]//8]
-plt.figure(figsize=(12, 6))
-  
-for i in range(len(comps)):
-    low_rank = u[:, :comps[i]] @ np.diag(s[:comps[i]]) @ v[:comps[i], :]
-      
-    if(i == 0):
-        plt.subplot(2, 3, i+1),
-        plt.imshow(low_rank, cmap='gray'),
-        plt.title(f'Actual Image with n_components = {comps[i]}')
-      
-    else:
-        plt.subplot(2, 3, i+1),
-        plt.imshow(low_rank, cmap='gray'),
-        plt.title(f'n_components = {comps[i]}')
-"""
-fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
+
+    image=stretchlim(image)
+
+    image=1-image
+    l=threshold_otsu(image)
+    image = binarize(image,l)
+
+    image = clear_border(image)
+
+    image = area_opening(image)[30:130,:]
+
+    #plt.imshow(image)
+    #plt.show()
+
+    #labeling
+    labeled_image = label(image,connectivity=2)
+    labels,counts = np.unique(labeled_image,return_counts=True)
+
+    # keep first 7 (background+6 letters)
+
+    labels = labels[:7]
+    counts = counts[:7]
+    letters = []
+    features = []
+    hogs = []
+    figs = []
+    minys = []
+    maxys = []
+    minxs = []
+    maxxs = []
+    for la in labels[1:]:#skip background
+        idxs=np.where(labeled_image==la)
+        #identify border x,y
+        minx,maxx = min(idxs[0]),max(idxs[0])
+        miny,maxy = min(idxs[1]),max(idxs[1])
+
+        minys.append(miny)
+        maxys.append(maxy)
+        minxs.append(minx)
+        maxxs.append(maxx)
+
+        # Assume label 0 is background
+        standard_size =(100, 50)
+        letter = resize(labeled_image[minx:maxx,miny:maxy]>0,standard_size ,anti_aliasing=False)
+        # plt.imshow(letter)
+        # plt.show()
+
+        letters.append(letter)
+        image=letter
+        fd, hog_image = hog(image, orientations=8, pixels_per_cell=(16, 16),
                     cells_per_block=(1, 1), visualize=True)
 
+        features.append(fd)
+        hogs.append(hog_image)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+        ax1.axis('off')
+        ax1.imshow(image, cmap=plt.cm.gray)
+        ax1.set_title('Input image')
 
-ax1.axis('off')
-ax1.imshow(image, cmap=plt.cm.gray)
-ax1.set_title('Input image')
+        # Rescale histogram for better display
 
-# Rescale histogram for better display
+        hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
 
-hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+        ax2.axis('off')
+        ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+        ax2.set_title('Histogram of Oriented Gradients')
+        figs.append(fig)
+    idxs=np.argsort(minys)
+    chars = np.array([x for x in chars],dtype=object)[idxs]
+    [x.show() for x in figs]
+    #TODO: assert order of chars or info in the other lists
+    return chars,letters,features,hogs,figs
 
-ax2.axis('off')
-ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
-ax2.set_title('Histogram of Oriented Gradients')
-plt.show()
+#if __name__=='__main__':
+image_paths = [x.replace('\\','/') for x in glob.glob('placas/dataset/*.jpg')]
+get_letters(image_paths[0])
