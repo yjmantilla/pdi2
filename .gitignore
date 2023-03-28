@@ -5,6 +5,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+AutoML-HOG/
+
 # C extensions
 *.so
 
