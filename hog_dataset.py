@@ -5,6 +5,7 @@ import glob
 import numpy as np
 from hog_features import get_letters
 import matplotlib.pyplot as plt
+import pickle
 single_char_path = "Y:/code/pdi2/placas/single-char-dataset"
 output_path = "Y:/code/pdi2/placas/single-char-explore"
 os.makedirs(output_path,exist_ok=True)
@@ -51,17 +52,20 @@ from supervised import AutoML
 from sklearn.model_selection import train_test_split
 from supervised.automl import AutoML
 import psutil
-njobs=len(psutil.Process().cpu_affinity())
+njobs=1#len(psutil.Process().cpu_affinity())
 X = features
-y = np.array(int_labels)
+y = np.array(labels)#np.array(int_labels)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25
 )
-os.makedirs('AutoML-HOG',exist_ok=True)
-automl = AutoML(results_path="AutoML-HOG",ml_task='multiclass_classification',n_jobs=njobs)
+folder = 'AutoML-HOG-char'
+os.makedirs(folder,exist_ok=True)
+automl = AutoML(results_path=folder,ml_task='multiclass_classification')#,n_jobs=njobs)
 automl.fit(X_train, y_train)
 
 predictions = automl.predict(X_test)
 
 print(f"Accuracy: {accuracy_score(y_test, predictions)*100.0:.2f}%" )
+
+pickle.dump( automl, open( "automl-hog-char.pickle", "wb" ) )

@@ -17,7 +17,8 @@ from tqdm import tqdm
 import psutil
 
 
-locations={0:(10,30,60,130),
+locations={
+0:(10,30,60,130),
 1:(65,30,115,130),
 2:(120,30,170,130),
 3:(205,30,255,130),
@@ -73,13 +74,13 @@ def get_letters(img_path,shortcut=False,locations=locations):
     if not shortcut:
         image = clear_border(image)
 
-        image = area_opening(image)[30:130,:]
+        image = area_opening(image)
 
     #plt.imshow(image)
     #plt.show()
 
     #labeling
-    labeled_image = label(image,connectivity=2)
+    labeled_image = label(image[30:130,:],connectivity=2,background=1)
     labels,counts = np.unique(labeled_image,return_counts=True)
 
     # keep first 7 (background+6 letters)
@@ -192,4 +193,5 @@ if __name__=='__main__':
     single_char_path = "Y:/code/pdi2/placas/single-char-dataset"
     os.makedirs(single_char_path,exist_ok=True)
     njobs=len(psutil.Process().cpu_affinity())
+    # test: pipeline(image_paths[1])
     result = Parallel(n_jobs=njobs)(delayed(pipeline)(xpath) for xpath in tqdm(image_paths))

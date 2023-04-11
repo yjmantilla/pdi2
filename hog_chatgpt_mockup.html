@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>License Plate Reader</title>
+	<style>
+		body {
+			background-color: #f5f5f5;
+			color: #333;
+			font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+			font-size: 14px;
+			line-height: 1.42857143;
+		}
+
+		.container {
+			margin: 0 auto;
+			max-width: 700px;
+			padding: 20px;
+		}
+
+		.banner {
+			background-color: #333;
+			color: #fff;
+			font-family: monospace;
+			padding: 10px;
+			text-align: center;
+		}
+
+		.upload {
+			background-color: #fff;
+			border: 1px solid #ccc;
+			margin: 20px 0;
+			padding: 20px;
+			text-align: center;
+		}
+
+		.results {
+			background-color: #fff;
+			border: 1px solid #ccc;
+			margin: 20px 0;
+			padding: 20px;
+			text-align: center;
+		}
+
+		.error {
+			background-color: #fff;
+			border: 1px solid #ccc;
+			margin: 20px 0;
+			padding: 20px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="banner">
+			<pre>
+  ___        _   _         _          _____      _          
+ / _ \      | | | |       | |        / ____|    | |         
+/ /_\ \_   _| |_| |_ _ __| |__   ___| (___   ___| | ___ ___ 
+|  _  | | | | __| __| '__| '_ \ / _ \\___ \ / _ \ |/ __/ _ \
+| | | | |_| | |_| |_| |  | |_) |  __/____) |  __/ | (_|  __/
+\_| |_/\__,_|\__|\__|_|  |_.__/ \___|_____/ \___|_|\___\___|
+			</pre>
+		</div>
+
+		<div class="upload">
+			<h2>UPLOAD YOUR IMAGE</h2>
+			<hr>
+			<div class="upload-form">
+				<form>
+					<input type="file" name="image-upload"><br><br>
+					<button type="submit">Upload</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="results">
+			<h2>RESULTS</h2>
+			<hr>
+			<div class="plate-info">
+				<h3>License Plate:</h3>
+				<pre>
+ -----------------
+ |  ABC123  |     
+ -----------------
+				</pre>
+			</div>
+			<div class="make-model-info">
+				<h3>Make &amp; Model:</h3>
+				<p>Toyota Corolla 2022</p>
+			</div>
+			<div class="upload-another">
+				<button type="button">Upload Another</button>
+			</div>
+		</div>
+
+		<div class="error">
+			<h2>ERROR</h2>
+			<hr>
+			<div class="error-message">
+				<p>Error message here</p>
+			</div>
+			<div class="try-again">
+				<button type="button">Try Again</button>
+			</div>
