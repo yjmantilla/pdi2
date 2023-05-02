@@ -253,7 +253,7 @@ if __name__=='__main__':
     image_paths = [x.replace('\\','/') for x in glob.glob('placas/dataset/*.jpg')]
 
     # Directorio de salida del algoritmo
-    single_char_path = "Y:/code/pdi2/placas/single-char-dataset"
+    single_char_path = "Y:/code/pdi2/placas/single-char-dataset2"
     os.makedirs(single_char_path,exist_ok=True)
 
     # Paralelizacion

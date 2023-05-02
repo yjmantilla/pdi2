@@ -1,0 +1,37 @@
+# README
+
+## Generar un environment de python
+
+...con los paquetes descritos en packages.txt
+
+## Generacion del Dataset
+Correr hog_features.py.
+
+Las siguientes lineas controlan los directorios de entrada y salida del algoritmo:
+
+```python
+image_paths = [x.replace('\\','/') for x in glob.glob('placas/dataset/*.jpg')]
+
+# Directorio de salida del algoritmo
+single_char_path = "Y:/code/pdi2/placas/single-char-dataset"
+```
+
+## Entrenamiento
+
+Correr hog_train.py.
+
+La siguiente linea define el directorio donde esta el dataset para entrenar
+
+```python
+single_char_path = "Y:/code/pdi2/placas/single-char-dataset"
+```
+
+## Prediccion
+
+Correr hog_predict.
+
+Seleccionar la placa a predecir en 
+
+```python
+placa = 'placas/dataset/ACU185.jpg'
+```
